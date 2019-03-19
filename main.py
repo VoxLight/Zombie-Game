@@ -29,11 +29,20 @@ while alive:
             continue
         if event.type == pygame.MOUSEBUTTONDOWN and event.__dict__['button'] == 3:
             destination = event.__dict__['pos']
+            print(destination)
 
-    ballx, bally = ballrect.x, ballrect.y
+    ballx, bally = ballrect.centerx, ballrect.centery
     if not distance((ballx, bally), destination) <= 10:
-        if ballrect.x > destination[0] and ballrect.y > destination[1]:
+        if ballx > destination[0] and bally > destination[1]:
             speed = (-2, -2)
+        elif ballx < destination[0] and bally < destination[1]:
+            speed = (2, 2)
+        elif ballx > destination[0] and bally < destination[1]:
+            speed = (-2, 2)
+        elif ballx < destination[0] and bally > destination[1]:
+            speed = (2, -2)
+    else:
+        speed = (0, 0)
 
     ballrect = ballrect.move(speed)
 
