@@ -1,85 +1,96 @@
-import sys, pygame
+import sys, pygame, tools
 from math import sqrt
-pygame.init()
-
-# Consts
-size = width, height = 1366, 768
-speed = [0, 0]
-black = 0, 0, 0
-alive = True
-mouse_is_down = False
-difficulty = 1
+from zombie import Zombie
+from player import Player
 
 
-#clock
-clock = pygame.time.Clock()
+def game_loop():
+    # Consts {
+    RESOLUTION = SCREEN_WIDTH, SCREEN_HEIGHT = 1366, 768
+    FPS = 60
+    # }
 
-timer = 0
+    # Bools {
+    alive = True
+    mouse_is_down = False
+    diff_up = False
+    # }
+    
+    # Ints{
+    elapsed = 0
+    # }
+
+    # Strings {
+    # }
+
+    # Lists {
+    player_dest = None
+    # }
+
+    # PyGame {
+    pygame.init()
+    screen = pygame.display.set_mode(RESOLUTION)
+    clock = pygame.time.Clock()
+    # }
+
+    # Player {
+    player = Player()
+    # }
 
 
-screen = pygame.display.set_mode(size)
+    # Enemy {
+    zombies = []
+    enemies = 0
+    # }
 
-class Zombie(pygame.Rect):
-    def __init__(self, bound, size):
-        self.left, self.top = bound
-        self.width, self.height = size
-        super().__init__(bound, size)
+    # Game_Loop
+    while alive:
+        # Clear the screen
+        screen.fill((0, 0, 0))
 
-zombie = Zombie((100, 100), (100, 100))
-destination = zombie.center
-
-def hypo(a, b):
-    return round(sqrt(a**2 + b**2), 2)
-
-def distance(xy1, xy2):
-    a = abs(xy1[0] - xy2[0])
-    b = abs(xy1[1] - xy2[1])
-    return hypo(a, b)
-
-while alive:
-    if timer >= 5000:
-        print(f"Difficulty increased by 1")
-        timer = 0
-        #difficulty += 1
         
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT: 
-            alive = False
-            continue
-        if event.type == pygame.MOUSEBUTTONDOWN and event.__dict__['button'] == 3:
-            mouse_is_down = True
-        elif event.type == pygame.MOUSEBUTTONUP and event.__dict__['button'] == 3:
-            mouse_is_down = False
- 
+        # Handle Input    
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT: 
+                alive = False
+                continue
+            if event.type == pygame.MOUSEBUTTONDOWN and event.__dict__['button'] == 3:
+                mouse_is_down = True
+            elif event.type == pygame.MOUSEBUTTONUP and event.__dict__['button'] == 3:
+                mouse_is_down = False
 
-    if mouse_is_down:
-        destination = pygame.mouse.get_pos()
-        print(destination)
+        # Update the player, then draw them to the screen
+        if mouse_is_down:
+            player_dest = pygame.mouse.get_pos()
+        player.update(player_dest)
+        player.draw(screen)
 
-    ballx, bally = zombie.centerx, zombie.centery
-    if not distance((ballx, bally), destination) <= zombie.width:
-        if ballx > destination[0]:
-            speed[0] = -difficulty*2
-        elif ballx < destination[0]:
-            speed[0] = difficulty*2
-        if bally < destination[1]:
-            speed[1] = difficulty
-        elif bally > destination[1]:
-            speed[1] = -difficulty
-    else:
-        if not speed == [0, 0]:
-            alive = False
-            continue
-        speed = [0, 0]
+        # Every second add a zombie
+        if len(zombies) < 100:
+            elapsed += clock.get_time()
+            if elapsed >= 1000:
+                elapsed = 0
+                zombies.append(Zombie())
+        elif not diff_up:
+            diff_up = True
+        
+        # Update each zombie, then draw it to the screen
+        for z in zombies:
+            z.update(player.center)
+            if diff_up:
+                z.difficulty += 0.00001
+            z.draw(screen)
+            if tools.distance(z.center, player.center) <= (player.width - (z.width+(z.width/2))):
+                alive = False
+                continue
+            
+        
+        
 
-    zombie = zombie.move(speed)
+        pygame.display.flip()
+        clock.tick(FPS)
 
 
-    screen.fill(black)
-    pygame.draw.line(screen, (255, 255, 255), zombie.center, destination, 5)
-    pygame.draw.circle(screen, (255, 0, 0), destination, 5, 5)
-    pygame.draw.rect(screen, (40, 255, 61), zombie, 50)
-    pygame.display.flip()
-    clock.tick(60)
-    timer += clock.get_time()
+if __name__ == "__main__":
+    game_loop()
