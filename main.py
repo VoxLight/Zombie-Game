@@ -18,6 +18,7 @@ def game_loop():
     
     # Ints{
     elapsed = 0
+    gamemode = 2
     # }
 
     # Strings {
@@ -41,6 +42,9 @@ def game_loop():
     # Enemy {
     zombies = []
     enemies = 0
+    # }
+
+    # Game {
     # }
 
     # Game_Loop
@@ -76,8 +80,14 @@ def game_loop():
             diff_up = True
         
         # Update each zombie, then draw it to the screen
+        if gamemode == 1:
+            zdest = player.center
+        elif gamemode == 2:
+            zdest = player.dest
+        else:
+            zdest = player.center
         for z in zombies:
-            z.update(player.center)
+            z.update(zdest)
             if diff_up:
                 z.difficulty += 0.00001
             z.draw(screen)

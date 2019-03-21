@@ -14,7 +14,7 @@ class Zombie(pygame.Rect):
 
         # Pathing{
         self.difficulty = random.random()*0.1
-        self.MAX_SPEED = False
+        self.MAX_SPEED = True
         self.MAX_DIFF = 3
         self.speed = [0, 0]
         self.tracing = False

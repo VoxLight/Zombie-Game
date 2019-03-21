@@ -7,7 +7,7 @@ class Player(pygame.Rect):
         self.pos = self.left, self.top = (round(res[0]/2), round(res[1]/2))
         self.size = self.width, self.height = (40, 40)
         self.r = round(self.width/2)
-        self.dest = None
+        self.dest = self.center
         # }
 
         # Physics {
@@ -16,7 +16,7 @@ class Player(pygame.Rect):
         self.MAX_DIFF = 5
         self.friction = 0.2
         self.speed = [0, 0]
-        self.tracing = True
+        self.tracing = False
         # }
 
         super().__init__(self.center, self.size)
