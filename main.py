@@ -7,6 +7,7 @@ from player import Player
 def game_loop():
     # Consts {
     RESOLUTION = SCREEN_WIDTH, SCREEN_HEIGHT = 1366, 768
+    SCREEN_CENTER = SCREEN_WIDTH/2, SCREEN_HEIGHT/2
     FPS = 60
     # }
 
@@ -18,7 +19,7 @@ def game_loop():
     
     # Ints{
     elapsed = 0
-    gamemode = 2
+    gamemode = 3         
     # }
 
     # Strings {
@@ -32,6 +33,15 @@ def game_loop():
     pygame.init()
     screen = pygame.display.set_mode(RESOLUTION)
     clock = pygame.time.Clock()
+        #PyGame.font{
+    font = None
+    font_rect = None
+    if gamemode == 3:
+        while not pygame.font.get_init:
+            pygame.font.init()
+        font = pygame.font.Font(pygame.font.get_default_font(), 40)
+        font_rect = pygame.Rect((SCREEN_CENTER), (0, 0))
+        # }
     # }
 
     # Player {
@@ -84,6 +94,11 @@ def game_loop():
             zdest = player.center
         elif gamemode == 2:
             zdest = player.dest
+        elif gamemode == 3:
+            zdest = player.dest
+            color = (255, 255, 255) if len(zombies) < 100 else (255, 0, 0)
+            text = font.render(str(len(zombies)), True, color)
+            screen.blit(text, font_rect)
         else:
             zdest = player.center
         for z in zombies:
